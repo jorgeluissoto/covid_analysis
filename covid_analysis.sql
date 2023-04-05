@@ -181,3 +181,20 @@ WHERE
 )
 SELECT *, (RollingPeopleVaccinated/ population) *100
 FROM PopvsVac;
+
+-- Creating View to store data for later visulization 
+CREATE VIEW PercentPopulationVaxpercentpopulationvax AS
+SELECT 
+    dea.continent,
+    dea.location,
+    dea.date,
+    dea.population,
+    vac.new_vaccinations,
+    SUM(vac.new_vaccinations) OVER (PARTITION BY dea.location ORDER BY dea.location, dea.date ) AS RollingPeopleVaccinated
+FROM
+    covid_death dea
+        JOIN
+    covid_vax vac ON dea.location = vac.location
+        AND dea.date = vac.date
+WHERE
+    dea.continent IS NOT NULL;
